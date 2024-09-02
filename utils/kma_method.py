@@ -1,188 +1,267 @@
-import numpy as np
 import math
+import numpy as np
+
 
 class KomodoMlipirAlgorithm:
     """
-    Implementasi Algoritma Komodo Mlipir Algorithm
-    metode oleh : Prof. Dr. Suyanto, S.T., M.Sc. (2021)
-    code python oleh : Pejalan Sunyi (2024)
-    
-    Parameter init:
-    n : jumlah populasi
-    p : proposi penjantan besar
-    d : mlipir rate
-    fitness_function : fungsi fitness yang akan dioptimalkan
-    space_search : batasan pencarian
-    max_iter : jumlah iterasi
-    random_state : state untuk keacakan
-    problem : masalah yang akan diselesaikan, "maximize" atau "minimize"
-    alpha : radius parthenogenesis
-    
+    Implementasi Algoritma Komodo Mlipir.
+
+    Metode oleh:
+        Prof. Dr. Suyanto, S.T., M.Sc. (2021)
+
+    Implementasi Python oleh:
+        Pejalan Sunyi (2024)
+
+    Parameters:
+        n (int): Jumlah populasi.
+        p (float): Proporsi jantan besar.
+        d (float): Tingkat mlipir.
+        fitness_function (callable): Fungsi fitness yang akan dioptimalkan.
+        search_space (dict): Batasan pencarian untuk setiap parameter.
+        max_iter (int): Jumlah iterasi maksimum.
+        random_state (int): Seed untuk keacakan.
+        problem (str): Jenis masalah, "maximize" atau "minimize".
+        alpha (float): Radius parthenogenesis.
+        stop_criteria (float): Kriteria penghentian.
     """
-    
-    def __init__(self, n:int, p:float, d:float, fitness_function:callable , space_search:dict, max_iter:int, info_katogorikal_tipe:list, problem:str="maximize",random_state:int=22, alpha:float = 0.1 ):
-        self.n = n 
+
+    def __init__(
+        self,
+        n: int,
+        p: float,
+        d: float,
+        fitness_function: callable,
+        search_space: dict,
+        max_iter: int = 100,
+        random_state: int = 42,
+        problem: str = "maximize",
+        alpha: float = 0.1,
+        stop_criteria: float = None,
+    ):
+        self.n = n
         self.p = p
         self.d = d
         self.fitness_function = fitness_function
-        self.space_search = space_search
+        self.search_space = search_space
         self.max_iter = max_iter
-        self.info_katogorikal_tipe = info_katogorikal_tipe
-        self.populasi_komodo = []
-        self.jb = None
-        self.jk = None
-        self.betina = None
-        self.jb_fitness = None
-        self.jk_fitness = None
-        self.betina_fitness = None
-        self.kategorikal_index = []
         self.random_state = random_state
-        self.problem = problem
+        self.problem = problem.lower()
         self.alpha = alpha
-        
-    
-    def jantan_besar(self):
-        # fungsi untuk mendapatkan jumlah penjantan besar
-        jb = math.floor(self.n  * self.p)
-        return jb
-    
-    def jantan_kecil(self):
-        #fungsi untuk mendapatkan jumlah penjantan kecil
-        jk = self.n - self.jantan_besar() - 1
-        return jk
-    
-    def inisialisasi_populasi(self):
-        #fungsi meninisiasi populasi
-        
+        self.stop_criteria = stop_criteria
+
+        self.population = []
+        self.male_large = []
+        self.male_small = []
+        self.female = None
+
+        self.male_large_fitness = []
+        self.male_small_fitness = []
+        self.female_fitness = None
+
+        self.history = {"best_fitness": [], "best_solution": []}
+        self.best_fitness = None
+        self.best_solution = None
+
+        self.rng = np.random.default_rng(self.random_state)
+
+    def initialize_population(self):
+        """
+        Inisialisasi populasi awal secara acak berdasarkan search_space.
+        """
         for _ in range(self.n):
-            individu_komodo = []
-            while individu_komodo not in self.populasi_komodo:
-                individu_komodo = np.random.default_rng(self.random_state).random(len(self.space_search.keys()))
-        
-                if individu_komodo in self.populasi_komodo :
-                    individu_komodo = []
-                else:
-                    self.populasi_komodo.append(individu_komodo)
-    
-    def split_individu(self):
-        #fungsi untuk membagi individu menjadi 3 bagian
-        
-        jumlah_jantan_besar = self.jantan_besar()
-        
+            individual = np.array([
+                self.rng.uniform(low, high)
+                for low, high in self.search_space.values()
+            ])
+            self.population.append(individual)
+            
+
+    def calculate_fitness(self):
+        """
+        Menghitung nilai fitness untuk setiap individu dalam populasi.
+        """
+        fitness_values = np.array([
+            self.fitness_function(individual)
+            for individual in self.population
+        ])
+        return fitness_values
+
+    def sort_population(self, fitness_values):
+        """
+        Mengurutkan populasi berdasarkan nilai fitness.
+
+        Args:
+            fitness_values (np.array): Array nilai fitness.
+
+        Returns:
+            Tuple: Populasi dan fitness yang sudah diurutkan.
+        """
         if self.problem == "maximize":
-            urutan, fitness_value = self.maximize_problem()
+            sorted_indices = np.argsort(fitness_values)[::-1]
+        elif self.problem == "minimize":
+            sorted_indices = np.argsort(fitness_values)
         else:
-            urutan, fitness_value = self.minimize_problem()
-                    
-        
-        self.jb = urutan[:jumlah_jantan_besar]
-        self.betina = urutan[jumlah_jantan_besar]
-        self.jk = urutan[jumlah_jantan_besar+1:]
-        
-        self.jb_fitness = fitness_value[:jumlah_jantan_besar]
-        self.betina_fitness = fitness_value[jumlah_jantan_besar]
-        self.jk_fitness = fitness_value[jumlah_jantan_besar+1:]
-    
-    def movement_jantan_besar(self):
-        #fungsi untuk movement jantan besar
-        individu_baru = []
-        for i in range(len(self.jb)):
-            individu1 = self.jb[i]
-            w = [] 
-            for j in range(len(self.populasi_komodo[self.jb[i]])):
+            raise ValueError("Parameter 'problem' harus 'maximize' atau 'minimize'.")
+
+        sorted_population = [self.population[i] for i in sorted_indices]
+        sorted_fitness = fitness_values[sorted_indices]
+        return sorted_population, sorted_fitness
+
+    def split_population(self, sorted_population, sorted_fitness):
+        """
+        Membagi populasi menjadi jantan besar, betina, dan jantan kecil.
+
+        Args:
+            sorted_population (list): Populasi yang sudah diurutkan.
+            sorted_fitness (np.array): Fitness yang sudah diurutkan.
+        """
+        num_male_large = math.floor(self.n * self.p)
+        self.male_large = sorted_population[:num_male_large]
+        self.male_large_fitness = sorted_fitness[:num_male_large]
+
+        self.female = sorted_population[num_male_large]
+        self.female_fitness = sorted_fitness[num_male_large]
+
+        self.male_small = sorted_population[num_male_large + 1:]
+        self.male_small_fitness = sorted_fitness[num_male_large + 1:]
+
+    def male_large_movement(self):
+        """
+        Mengupdate posisi jantan besar berdasarkan interaksi antar jantan besar.
+
+        Returns:
+            list: Daftar individu jantan besar yang telah diperbarui.
+        """
+        updated_males = []
+        for i, male in enumerate(self.male_large):
+            movement = np.zeros_like(male)
+            for j, other_male in enumerate(self.male_large):
                 if i != j:
-                    r1 = self.random_normal_0_1()
-                    r2 = self.random_normal_0_1()
-                    individu2 = self.jb[j]
-                
-                    if self.jb_fitness[j] > self.jb_fitness[i] or r2 < 0.5:
-                        w.append(r1*(individu2-individu1))
+                    r1 = self.rng.normal(0.5, 0.1)
+                    r2 = self.rng.normal(0.5, 0.1)
+                    if (
+                        self.male_large_fitness[j] > self.male_large_fitness[i]
+                        and r2 < 0.5
+                    ):
+                        movement += r1 * (other_male - male)
                     else:
-                        w.append(r1*(individu1-individu2))
-                    individu_baru.append(individu1 + sum(w))
-        
-        return individu_baru
-        
-             
-                        
-        
-    def movement_betina(self):
-        #fungsi untuk update betina
-        
-        prob = self.random_normal_0_1()
-        r1 = self.random_normal_0_1()
-        
-        if prob < 0.5 : 
-            anak1 = r1 * self.betina  + (1 - r1) * self.jb[0]
-            anak2 = r1 * self.jb[0] + (1-r1) * self.betina
-            
-            fitnes1 = self.fitness_function(anak1)
-            fitnes2 = self.fitness_function(anak2)
-            
-            if fitnes1 > fitnes2:
-                return anak1
-            else:
-                return anak2
-            
+                        movement += r1 * (male - other_male)
+            updated_male = male + movement
+            updated_male = self.clip_individual(updated_male)
+            updated_males.append(updated_male)
+        return updated_males
+
+    def female_movement(self):
+        """
+        Mengupdate posisi betina melalui kawin atau parthenogenesis.
+
+        Returns:
+            np.array: Individu betina yang telah diperbarui.
+        """
+        r = self.rng.uniform()
+        r1 = self.rng.normal(0.5, 0.1)
+        if r < 0.5:
+            # Kawin dengan jantan besar terbaik
+            male = self.male_large[0]
+            offspring1 = r1 * self.female + (1 - r1) * male
+            offspring2 = r1 * male + (1 - r1) * self.female
+
+            fitness1 = self.fitness_function(offspring1)
+            fitness2 = self.fitness_function(offspring2)
+
+            offspring = offspring1 if fitness1 > fitness2 else offspring2
+            print("Betina kawin dengan jantan besar.")
         else:
-            return self.betina + (2*r1 - 1) * self.alpha
-        
-        
-        
-        
-                                
-                        
-                        
-    def maximize_problem(self):
-        #mengurutkan dari terbesar ke terkecil
-        
-        urutan = []
-        fitness_value = []
-        count = 0
-        
-        while len(urutan) != len(self.populasi_komodo):
-            cuurent = self.fitness_function(self.populasi_komodo[count])
-            idx = count
-            
-            if count not in urutan:
-                for i in range(len(self.populasi_komodo)):
-                    if self.fitness_function(self.populasi_komodo[i]) >= cuurent and i not in urutan and count != i:
-                        cuurent = self.fitness_function(self.populasi_komodo[i])
-                        idx = i
-                urutan.append(idx)
-                fitness_value.append(cuurent)
-            else:
-                count += 1
-        
-        return urutan, fitness_value
-    
-    def minimize_problem(self):
-        #mengurutkan dari terkecil ke terbesar
-        
-        urutan = []
-        fitness_value = []
-        count = 0
-        
-        while len(urutan) != len(self.populasi_komodo):
-            cuurent = self.fitness_function(self.populasi_komodo[count])
-            idx = count
-            
-            if count not in urutan:
-                for i in range(len(self.populasi_komodo)):
-                    if self.fitness_function(self.populasi_komodo[i]) <= cuurent and i not in urutan and count != i:
-                        cuurent = self.fitness_function(self.populasi_komodo[i])
-                        idx = i
-                urutan.append(idx)
-                fitness_value.append(cuurent)
-            else:
-                count += 1
-        
-        return urutan, fitness_value
-    
-    def random_normal_0_1(self):
-        # fungsi untuk mendapatkan nilai random dari distribusi normal
-        
-        while True:
-            value = np.random.default_rng(self.random_state).normal(0.5,0.1)
-            if 0 <=value<=1:
-                return value
+            # Parthenogenesis
+            ub_lb = np.array([
+                high - low
+                for low, high in self.search_space.values()
+            ])
+            offspring = self.female + ub_lb * ((2 * r1 - 1) * self.alpha)
+            offspring = self.clip_individual(offspring)
+            print("Betina melakukan parthenogenesis.")
+        return offspring
+
+    def male_small_movement(self):
+        """
+        Mengupdate posisi jantan kecil berdasarkan interaksi dengan jantan besar.
+
+        Returns:
+            list: Daftar individu jantan kecil yang telah diperbarui.
+        """
+        updated_males = []
+        for male in self.male_small:
+            movement = np.zeros_like(male)
+            for large_male in self.male_large:
+                r1 = self.rng.normal(0.5, 0.1)
+                r2 = self.rng.uniform()
+                if r2 < self.d:
+                    movement += r1 * (large_male - male)
+            updated_male = male + movement
+            updated_male = self.clip_individual(updated_male)
+            updated_males.append(updated_male)
+        return updated_males
+
+    def clip_individual(self, individual):
+        """
+        Membatasi nilai individu agar tetap dalam batas search_space.
+
+        Args:
+            individual (np.array): Individu yang akan dibatasi.
+
+        Returns:
+            np.array: Individu yang telah dibatasi.
+        """
+        clipped = np.array([
+            np.clip(value, low, high)
+            for value, (low, high) in zip(individual, self.search_space.values())
+        ])
+        return clipped
+
+    def optimize(self):
+        """
+        Menjalankan proses optimasi menggunakan Algoritma Komodo Mlipir.
+
+        Returns:
+            dict: Solusi terbaik dan nilai fitness terbaik.
+        """
+        self.initialize_population()
+        for iteration in range(self.max_iter):
+            fitness_values = self.calculate_fitness()
+            sorted_pop, sorted_fit = self.sort_population(fitness_values)
+            self.split_population(sorted_pop, sorted_fit)
+
+            # Pergerakan masing-masing kelompok
+            new_male_large = self.male_large_movement()
+            new_female = self.female_movement()
+            new_male_small = self.male_small_movement()
+
+            # Membentuk populasi baru
+            self.population += new_male_large + [new_female] + new_male_small
+            new_populasi,fitness_values = self.sort_population(self.calculate_fitness())
+            self.population = new_populasi[:self.n]
+
+            # Evaluasi populasi baru
+            self.best_fitness = fitness_values[0]
+            self.best_solution = self.population[0]
+
+            # Menyimpan sejarah
+            self.history["best_fitness"].append(self.best_fitness)
+            self.history["best_solution"].append(self.best_solution)
+
+            print(
+                f"Generasi {iteration + 1}: Best Fitness = {self.best_fitness}, "
+                f"Best Solution = {self.best_solution}"
+            )
+
+            # Pengecekan kriteria penghentian
+            if self.stop_criteria is not None:
+                if abs(self.best_fitness - self.stop_criteria) <= 0.1:
+                    print("Kriteria penghentian tercapai.")
+                    break
+
+        return {
+            "best_solution": self.best_solution,
+            "best_fitness": self.best_fitness,
+            "history": self.history,
+        }
