@@ -139,13 +139,23 @@ class KomodoMlipirAlgorithm:
                 if i != j:
                     r1 = self.rng.normal(0.5, 0.1)
                     r2 = self.rng.normal(0.5, 0.1)
-                    if (
-                        self.male_large_fitness[j] > self.male_large_fitness[i]
-                        and r2 < 0.5
-                    ):
-                        movement += r1 * (other_male - male)
+                    if self.problem == "maximize":
+                        if (
+                            self.male_large_fitness[j] > self.male_large_fitness[i]
+                            and r2 < 0.5
+                        ):
+                            movement += r1 * (other_male - male)
+                        else:
+                            movement += r1 * (male - other_male)
                     else:
-                        movement += r1 * (male - other_male)
+                        if (
+                            self.male_large_fitness[j] < self.male_large_fitness[i]
+                            and r2 < 0.5
+                        ):
+                            movement += r1 * (other_male - male)
+                        else:
+                            movement += r1 * (male - other_male)
+                            
             updated_male = male + movement
             updated_male = self.clip_individual(updated_male)
             updated_males.append(updated_male)
@@ -168,8 +178,12 @@ class KomodoMlipirAlgorithm:
 
             fitness1 = self.fitness_function(offspring1)
             fitness2 = self.fitness_function(offspring2)
-
-            offspring = offspring1 if fitness1 > fitness2 else offspring2
+            
+            if self.problem == "maximize":
+                offspring = offspring1 if fitness1 > fitness2 else offspring2
+            else :
+                offspring = offspring1 if fitness1 < fitness2 else offspring2
+                
             print("Betina kawin dengan jantan besar.")
         else:
             # Parthenogenesis
