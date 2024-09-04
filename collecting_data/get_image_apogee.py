@@ -1,11 +1,16 @@
 import os
+import sys
+
+
+# Menambahkan direktori 'tugas_akhir' ke sys.path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from utils.api_sdss import download_fits_apogee
 import pandas as pd
 #https://data.sdss.org/sas/dr17/apogee/spectro/redux/dr17/stars/apo1m/
 
 base_url = 'https://data.sdss.org/sas/dr17/apogee/spectro/redux/dr17/'
 
-data = pd.read_csv('collecting_data/sdss_spectra_data_bintang_apogee.csv')
+data = pd.read_csv('sdss_spectra_data_bintang_apogee.csv')
 
 save_dir = 'spectra_images_apogee'
 if not os.path.exists(save_dir):
@@ -29,5 +34,5 @@ for _, row in data.iterrows():
         print(str(e))
         print(f"Failed to download {filename}")
 df = pd.DataFrame(dictio)
-df.to_csv('collecting_data/file_id.csv', index=False)
+df.to_csv('file_id.csv', index=False)
 print("Download selesai")

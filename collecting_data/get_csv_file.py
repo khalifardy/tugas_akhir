@@ -1,6 +1,12 @@
 #import requests
 #import pandas as pd
 #import os
+import sys
+import os
+
+# Menambahkan direktori 'tugas_akhir' ke sys.path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 import io
 import csv
 from utils.api_sdss import run_query
@@ -10,7 +16,7 @@ from utils.api_sdss import run_query
 
     
 query = """
-SELECT TOP 2000 *
+SELECT TOP 100 *
 FROM apogeeStar at INNER JOIN 
 aspcapStar asr ON at.apogee_id = asr.apogee_id
 where at.starflag = 0 
