@@ -16,7 +16,7 @@ def inputx_outputy(file_1,file_2,folder_path):
     for filename in os.listdir(folder_path):
         temp_y = []
         if os.path.isfile(os.path.join(folder_path,filename)):
-            print(f"nama file: {filename}")
+            #print(f"nama file: {filename}")
             flux = fits.getdata(f"{folder_path}/{filename}")
             hdr = fits.getheader(f"{folder_path}/{filename}")
             nf = len(flux[0])
