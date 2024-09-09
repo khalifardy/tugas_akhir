@@ -241,8 +241,9 @@ class KomodoMlipirAlgorithm:
         """
         self.initialize_population()
         for iteration in range(self.max_iter):
-            fitness_values = self.calculate_fitness()
-            sorted_pop, sorted_fit = self.sort_population(fitness_values)
+            if iteration == 0:
+                fitness_values = self.calculate_fitness()
+                sorted_pop, sorted_fit = self.sort_population(fitness_values)
             self.split_population(sorted_pop, sorted_fit)
 
             # Pergerakan masing-masing kelompok
@@ -254,6 +255,8 @@ class KomodoMlipirAlgorithm:
             self.population += new_male_large + [new_female] + new_male_small
             new_populasi,fitness_values = self.sort_population(self.calculate_fitness())
             self.population = new_populasi[:self.n]
+            sorted_pop = self.population
+            sorted_fit = fitness_values[:self.n]
 
             # Evaluasi populasi baru
             self.best_fitness = fitness_values[0]
