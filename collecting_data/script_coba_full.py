@@ -1,5 +1,6 @@
 import os
 import sys
+import datetime
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname('coba_full.ipynb'), '..')))
 
 from astropy.io import fits
@@ -98,11 +99,16 @@ search_space = {
 n = 5
 p = 0.5
 d = 0.1
-max_iter = 100
+max_iter = 5
 fitness_function = start_net.fitness_function
 
 
 kma = KomodoMlipirAlgorithm(n,p,d,fitness_function,search_space,max_iter)
+start = datetime.datetime.now()
 hasil = kma.optimize()
+end = datetime.datetime.now()
+delta = end - start
 
+print(delta.total_seconds())
+print(kma.history)
 print(hasil)
