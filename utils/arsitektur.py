@@ -1,6 +1,7 @@
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Conv1D, MaxPooling1D, Flatten, Dense, MaxPool1D
 from tensorflow.keras.optimizers import Adam
+from tensorflow.keras import backend as K
 import numpy as np
 
 class StarNet:
@@ -118,6 +119,7 @@ class StarNet:
         _,val_error = self.arsitektur_start_net(self.X_train, self.y_train, self.X_test, self.y_test, self.KERNEL_SIZE_DICT.get(decode_komodo[0]), self.KERNEL_SIZE_DICT.get(decode_komodo[1]), self.ACTIVATION_DICT.get(decode_komodo[2]), self.ACTIVATION_DICT.get(decode_komodo[3]), self.KERNEL_INITIALIZER.get(decode_komodo[4]), self.KERNEL_INITIALIZER.get(decode_komodo[5]), decode_komodo[6], self.ACTIVATION_DICT.get(decode_komodo[7]), self.ACTIVATION_DICT.get(decode_komodo[8]), self.ACTIVATION_DICT.get(decode_komodo[9]), self.KERNEL_INITIALIZER.get(decode_komodo[10]), self.KERNEL_INITIALIZER.get(decode_komodo[11]), self.KERNEL_INITIALIZER.get(decode_komodo[12]), self.LEARNING_RATE_DICT.get(decode_komodo[13]), decode_komodo[14], 2**decode_komodo[15])
     
         penyebut = val_error + 10**-8
+        K.clear_session()
     
         return 1/penyebut
     
