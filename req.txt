@@ -1,7 +1,7 @@
 absl-py==2.1.0
 astroML==1.0.2.post1
-#astropy==6.1.1
-#astropy-iers-data==0.2024.7.1.0.34.3
+astropy==6.1.1
+astropy-iers-data==0.2024.7.1.0.34.3
 asttokens==2.4.1
 astunparse==1.6.3
 bcrypt==4.1.3
