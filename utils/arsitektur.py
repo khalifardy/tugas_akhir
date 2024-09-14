@@ -3,7 +3,9 @@ from tensorflow.keras.layers import Conv1D, MaxPooling1D, Flatten, Dense, MaxPoo
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras import backend as K
 import numpy as np
+import os
 
+os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 class StarNet:
     KERNEL_SIZE_DICT = {
         1:16,

@@ -1,8 +1,11 @@
 import math
 import numpy as np
 import multiprocessing as mp
+import os
+mp.freeze_support()
 
 
+os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 class KomodoMlipirAlgorithm:
     """
     Implementasi Algoritma Komodo Mlipir.
