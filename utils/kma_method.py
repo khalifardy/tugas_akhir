@@ -1,5 +1,6 @@
 import math
 import numpy as np
+import multiprocessing as mp
 
 
 class KomodoMlipirAlgorithm:
@@ -75,17 +76,22 @@ class KomodoMlipirAlgorithm:
             ])
             self.population.append(individual)
             
-
     def calculate_fitness(self):
         """
-        Menghitung nilai fitness untuk setiap individu dalam populasi.
+        Menghitung nilai fitness untuk setiap individu dalam populasi
+        menggunakan multiprocessing.
         """
-        fitness_values = np.array([
-            self.fitness_function(individual)
-            for individual in self.population
-        ])
+        with mp.Pool(processes=mp.cpu_count()) as pool:
+            fitness_values = np.array(
+                pool.map(self.fitness_function, self.population)
+            )
         return fitness_values
-
+        
+        #fitness_values = np.array([
+            #self.fitness_function(individual)
+            #for individual in self.population
+        #])
+        #return fitness_values
     def sort_population(self, fitness_values):
         """
         Mengurutkan populasi berdasarkan nilai fitness.
