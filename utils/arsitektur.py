@@ -2,6 +2,7 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Conv1D, MaxPooling1D, Flatten, Dense, MaxPool1D
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras import backend as K
+from tensorflow.keras.layers import Input
 import numpy as np
 import os
 
@@ -79,9 +80,11 @@ class StarNet:
     def arsitektur_start_net(self,X_train, y_train, X_test, y_test,k1,k2,a1,a2,ki1,ki2,pz,ad1,ad2,ad3,kid1,kid2,kid3,lr,epoch, batch):
         # Membangun model Sequential
         model = Sequential()
+        
+        model.add(Input(shape=(8575, 1)))
 
         # Conv Layer 1
-        model.add(Conv1D(filters=4, kernel_size=k1, activation=a1, kernel_initializer=ki1,input_shape=(8575, 1)))
+        model.add(Conv1D(filters=4, kernel_size=k1, activation=a1, kernel_initializer=ki1))
 
         # Conv Layer 2
         model.add(Conv1D(filters=16, kernel_size=k2, activation=a2, kernel_initializer=ki2))
