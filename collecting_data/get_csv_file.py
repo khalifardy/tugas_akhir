@@ -16,7 +16,7 @@ from utils.api_sdss import run_query
 
     
 query = """
-SELECT TOP 100 *
+SELECT TOP 5000 *
 FROM apogeeStar at INNER JOIN 
 aspcapStar asr ON at.apogee_id = asr.apogee_id
 where at.starflag = 0 
