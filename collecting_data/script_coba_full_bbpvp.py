@@ -37,9 +37,10 @@ if __name__ == '__main__':
 
     #split data menjadi data latih dan data uji
     X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
+    X_train_cnn, X_test_cnn,y_train_cnn,y_test_cnn = train_test_split(X_train,y_train, test_size=0.2,random_state=22)
 
     #inisiasi fungsi fitness
-    start_net = StarNet(X_train, y_train, X_test, y_test)
+    start_net = StarNet(X_train_cnn, y_train_cnn, X_test_cnn, y_test_cnn)
 
     search_space = {
         'k1': [0, 1],
