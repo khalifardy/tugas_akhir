@@ -68,7 +68,7 @@ if __name__ == '__main__':
     n = 5
     p = 0.5
     d = 0.1
-    max_iter = 5
+    max_iter = 10
     fitness_function = start_net.fitness_function
 
     os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
