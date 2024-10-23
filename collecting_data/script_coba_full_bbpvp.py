@@ -60,10 +60,10 @@ search_space = {
 
 #inisiasi kmh 
 
-n = 10
+n = 5
 p = 0.5
 d = 0.1
-max_iter = 10
+max_iter = 5
 fitness_function = start_net.fitness_function
 
 
