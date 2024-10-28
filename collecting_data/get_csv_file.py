@@ -42,4 +42,3 @@ with open(csv_filename, 'w', newline='') as csvfile:
 #for sd in df:
     #print(sd)
     
-    

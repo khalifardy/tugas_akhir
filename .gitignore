@@ -161,3 +161,8 @@ cython_debug/
 
 collecting_data/file_image/
 collecting_data/spectra_images_apogee/
+collecting_data/file_id.csv
+
+collecting_data/sdss_spectra_data_bintang_apogee.csv
+
+collecting_data/get_csv_file.py

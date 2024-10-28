@@ -1,7 +1,11 @@
 import math
 import numpy as np
+import multiprocessing as mp
+import os
+mp.freeze_support()
 
 
+os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 class KomodoMlipirAlgorithm:
     """
     Implementasi Algoritma Komodo Mlipir.
@@ -75,17 +79,22 @@ class KomodoMlipirAlgorithm:
             ])
             self.population.append(individual)
             
-
     def calculate_fitness(self):
         """
-        Menghitung nilai fitness untuk setiap individu dalam populasi.
+        Menghitung nilai fitness untuk setiap individu dalam populasi
+        menggunakan multiprocessing.
         """
-        fitness_values = np.array([
-            self.fitness_function(individual)
-            for individual in self.population
-        ])
+        with mp.Pool(processes=mp.cpu_count()) as pool:
+            fitness_values = np.array(
+                pool.map(self.fitness_function, self.population)
+            )
         return fitness_values
-
+        
+        #fitness_values = np.array([
+            #self.fitness_function(individual)
+            #for individual in self.population
+        #])
+        #return fitness_values
     def sort_population(self, fitness_values):
         """
         Mengurutkan populasi berdasarkan nilai fitness.
@@ -252,11 +261,18 @@ class KomodoMlipirAlgorithm:
             new_male_small = self.male_small_movement()
 
             # Membentuk populasi baru
-            self.population += new_male_large + [new_female] + new_male_small
-            new_populasi,fitness_values = self.sort_population(self.calculate_fitness())
+            old_population = self.population.copy()
+            old_fitness_values = fitness_values.copy()
+            self.population = new_male_large + [new_female] + new_male_small
+            child_fitness_values = self.calculate_fitness()
+            self.population = old_population + self.population
+            fitness_values_new = np.concatenate([old_fitness_values, child_fitness_values])
+            new_populasi, fitness_values = self.sort_population(fitness_values_new)
             self.population = new_populasi[:self.n]
+            fitness_values = fitness_values[:self.n]
             sorted_pop = self.population
-            sorted_fit = fitness_values[:self.n]
+            sorted_fit = fitness_values
+            
 
             # Evaluasi populasi baru
             self.best_fitness = fitness_values[0]
