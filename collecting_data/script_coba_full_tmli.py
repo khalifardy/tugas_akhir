@@ -85,7 +85,7 @@ if __name__ == '__main__':
     print(" ")
     print(hasil)
 
-    plt.plot(kma.history["best_fitness"],[i+1 for i in range(len(kma.history["best_fitness"])) ])
+    plt.plot([i+1 for i in range(len(kma.history["best_fitness"])) ],kma.history["best_fitness"])
     plt.xlabel('generasi')
     plt.ylabel('fitness_value')
     plt.title(f'KMA n = {n}, iterasi{max_iter}')
