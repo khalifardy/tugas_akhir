@@ -6,14 +6,22 @@ import os
 from astropy.io import fits
 
 
-def inputx_outputy(file_1,file_2,folder_path):
+def inputx_outputy(file_1,file_2,folder_path,untuk):
 
     df = pd.read_csv(file_1)
     df2 = pd.read_csv(file_2)
     y = []
     x = []
+    slc = round(0.2*len(os.listdir(folder_path)))
+    lst_file = os.listdir(folder_path)
     
-    for filename in os.listdir(folder_path):
+    if untuk == 'train':
+        lst_file = lst_file[:slc]
+    else :
+        lst_file = lst_file[slc:]
+        
+     
+    for filename in lst_file:
         temp_y = []
         if os.path.isfile(os.path.join(folder_path,filename)):
             #print(f"nama file: {filename}")
