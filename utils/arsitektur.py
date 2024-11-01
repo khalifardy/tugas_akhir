@@ -57,7 +57,7 @@ class StarNet:
         'kernel_initializer':[1,13],
         'learning_rate':[1,6],
         'epoch':[50,100],
-        'batch':[0,8],
+        'batch':[0,6],
         'pool_size':[2,9]
         
     }
@@ -71,7 +71,7 @@ class StarNet:
     def decoding(self,x:np.array):
     
         lower_bond = np.array([1,1,1,1,1,1,2,1,1,1,1,1,1,1,50,0])
-        upper_bond = np.array([7,7,5,5,13,13,9,5,5,5,13,13,13,6,100,8])
+        upper_bond = np.array([7,7,5,5,13,13,9,5,5,5,13,13,13,6,100,6])
         delta = (upper_bond - lower_bond)
         term = x * delta
         hasil = lower_bond + term
