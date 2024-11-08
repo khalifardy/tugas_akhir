@@ -13,12 +13,15 @@ from scipy import interpolate
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Conv1D, MaxPooling1D, Flatten, Dense
+import matplotlib.pyplot as plt
 
 #library lokal
 from utils.utilitas import inputx_outputy
 from utils.arsitektur import StarNet
 from utils.kma_method import KomodoMlipirAlgorithm
 from utils.pre_processing import interpolate_nan, normalize_flux_minmax
+import seaborn as sns
+sns.set()
 
 if __name__ == '__main__':
     mp.freeze_support()  # Untuk mendukung multiprocessing di Windows
@@ -28,7 +31,7 @@ if __name__ == '__main__':
     name_file_2 = 'file_id.csv'
     folder_path = 'spectra_images_apogee'
 
-    x, y = inputx_outputy(name_file_1, name_file_2, folder_path)
+    x, y = inputx_outputy(name_file_1, name_file_2, folder_path,untuk='train')
 
     #interpolasi nilai nan
     for i in range(len(x)):
@@ -37,10 +40,10 @@ if __name__ == '__main__':
 
     #split data menjadi data latih dan data uji
     X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
-    X_train_cnn, X_test_cnn,y_train_cnn,y_test_cnn = train_test_split(X_train,y_train, test_size=0.2,random_state=22)
+    #X_train_cnn, X_test_cnn,y_train_cnn,y_test_cnn = train_test_split(X_train,y_train, test_size=0.2,random_state=22)
 
     #inisiasi fungsi fitness
-    start_net = StarNet(X_train_cnn, y_train_cnn, X_test_cnn, y_test_cnn)
+    start_net = StarNet(X_train, y_train, X_test, y_test)
 
     search_space = {
         'k1': [0, 1],
@@ -77,5 +80,13 @@ if __name__ == '__main__':
     delta = end - start
 
     print(delta.total_seconds())
+    print(" ")
     print(kma.history)
+    print(" ")
     print(hasil)
+
+    plt.plot([i+1 for i in range(len(kma.history["best_fitness"])) ],kma.history["best_fitness"])
+    plt.xlabel('generasi')
+    plt.ylabel('fitness_value')
+    plt.title(f'KMA n = {n}, iterasi{max_iter}')
+    plt.show()
