@@ -18,7 +18,7 @@ from tensorflow.keras.layers import Conv1D, MaxPooling1D, Flatten, Dense
 from utils.utilitas import inputx_outputy
 from utils.arsitektur import StarNet
 from utils.kma_method import KomodoMlipirAlgorithm
-from utils.pre_processing import interpolate_nan, normalize_flux_median, standarize_output
+from utils.pre_processing import interpolate_nan, normalize_flux_minmax
 
 if __name__ == '__main__':
     mp.freeze_support()  # Untuk mendukung multiprocessing di Windows
@@ -33,9 +33,7 @@ if __name__ == '__main__':
     #interpolasi nilai nan
     for i in range(len(x)):
         x[i] = interpolate_nan(x[i])
-        x[i] = normalize_flux_median(x[i])
-    
-    y = standarize_output(y)
+        x[i] = normalize_flux_minmax(x[i])
 
      #split data menjadi data latih dan data uji
     X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
