@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 from utils.utilitas import inputx_outputy
 from utils.arsitektur import StarNet
 from utils.kma_method import KomodoMlipirAlgorithm
-from utils.pre_processing import interpolate_nan, normalize_flux_minmax
+from utils.pre_processing import interpolate_nan, normalize_flux_median, standarize_output
 import seaborn as sns
 sns.set()
 
@@ -31,12 +31,14 @@ if __name__ == '__main__':
     name_file_2 = 'file_id.csv'
     folder_path = 'spectra_images_apogee'
 
-    x, y = inputx_outputy(name_file_1, name_file_2, folder_path,untuk='train')
+    x, y, wavelength = inputx_outputy(name_file_1, name_file_2, folder_path,untuk='train')
 
     #interpolasi nilai nan
     for i in range(len(x)):
         x[i] = interpolate_nan(x[i])
-        x[i] = normalize_flux_minmax(x[i])
+        x[i] = normalize_flux_median(x[i],wavelength[i])
+    
+    y = standarize_output(y)
 
     #split data menjadi data latih dan data uji
     X_train, X_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)

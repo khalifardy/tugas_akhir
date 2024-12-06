@@ -12,6 +12,7 @@ def inputx_outputy(file_1,file_2,folder_path,untuk):
     df2 = pd.read_csv(file_2)
     y = []
     x = []
+    wavelength = []
     slc = round(0.2*len(os.listdir(folder_path)))
     lst_file = os.listdir(folder_path)
     
@@ -45,8 +46,10 @@ def inputx_outputy(file_1,file_2,folder_path,untuk):
             temp_y = [teff,logg,vsin1,m_h]
             y.append(temp_y)
             x.append(flux[0])
+            wavelength.append(ws)
+            
     
-    return np.array(x),np.array(y)
+    return np.array(x),np.array(y),np.array(wavelength)
 
 def convert_to_jpg(folder_path):
     
