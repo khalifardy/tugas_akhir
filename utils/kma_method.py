@@ -253,6 +253,8 @@ class KomodoMlipirAlgorithm:
             if iteration == 0:
                 fitness_values = self.calculate_fitness()
                 sorted_pop, sorted_fit = self.sort_population(fitness_values)
+                self.best_fitness = sorted_fit[0]
+                self.best_solution = sorted_pop[0]
             self.split_population(sorted_pop, sorted_fit)
 
             # Pergerakan masing-masing kelompok
@@ -261,14 +263,15 @@ class KomodoMlipirAlgorithm:
             new_male_small = self.male_small_movement()
 
             # Membentuk populasi baru
-            old_population = self.population.copy()
-            old_fitness_values = fitness_values.copy()
+            #old_population = self.population.copy()
+            #old_fitness_values = fitness_values.copy()
             self.population = new_male_large + [new_female] + new_male_small
-            child_population = new_male_large + [new_female] + new_male_small
-            child_fitness_values = self.calculate_fitness()
-            self.population = old_population + self.population
-            fitness_values_new = np.concatenate([old_fitness_values, child_fitness_values])
-            new_populasi, fitness_values = self.sort_population(fitness_values_new)
+            #child_population = new_male_large + [new_female] + new_male_small
+            #child_fitness_values = self.calculate_fitness()
+            fitness_values = self.calculate_fitness()
+            #self.population = old_population + self.population
+            #fitness_values_new = np.concatenate([old_fitness_values, child_fitness_values])
+            new_populasi, new_fitness_values = self.sort_population(fitness_values)
             #self.population = new_populasi[:self.n]
             #fitness_values = fitness_values[:self.n]
             #sorted_pop = self.population
@@ -276,14 +279,15 @@ class KomodoMlipirAlgorithm:
             
 
             # Evaluasi populasi baru
-            self.best_fitness = fitness_values[0]
-            self.best_solution = new_populasi[0]
-            self.population = child_population
-            new_komodo_posisi, new_komodo_fitness = self.sort_population(child_fitness_values)
-            self.population = new_komodo_posisi
-            child_fitness_values = new_komodo_fitness
+            if self.best_fitness < new_fitness_values[0]:
+                self.best_fitness = new_fitness_values[0]
+                self.best_solution = new_populasi[0]
+            self.population = new_populasi
+            #new_komodo_posisi, new_komodo_fitness = self.sort_population(child_fitness_values)
+            #self.population = new_komodo_posisi
+            #child_fitness_values = new_komodo_fitness
             sorted_pop = self.population
-            sorted_fit = child_fitness_values
+            sorted_fit = new_fitness_values
 
             # Menyimpan sejarah
             self.history["best_fitness"].append(self.best_fitness)
