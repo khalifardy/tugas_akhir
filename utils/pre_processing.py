@@ -42,4 +42,14 @@ def standarize_output(y):
     std_y = np.std(y,axis=0)
     y = (y - mean_y) / std_y
     return y
+
+def mean_std(y):
+    y = np.array(y)
+    mean_y = np.mean(y,axis=0)
+    std_y = np.std(y,axis=0)
     
+    return mean_y,std_y
+
+def decode_pred(y, mean_y, std_y):
+    y = (y * std_y) + mean_y
+    return y

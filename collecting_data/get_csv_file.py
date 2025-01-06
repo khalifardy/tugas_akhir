@@ -20,14 +20,14 @@ SELECT TOP 5000 *
 FROM apogeeStar at INNER JOIN 
 aspcapStar asr ON at.apogee_id = asr.apogee_id
 where at.starflag = 0 
-and at.vscatter < 1 and at.rv_logg != -9999 and at.SNR > 200 and asr.aspcapflag =0
+and at.vscatter < 1 and at.rv_logg != -9999 and at.SNR <= 200 and asr.aspcapflag =0
 and asr.vsini != -9999 and at.telescope = 'apo25m' and m_h != -9999
 """
 
 
 
 csv_data = run_query(query)
-csv_filename = 'sdss_spectra_data_bintang_apogee.csv'
+csv_filename = 'sdss_spectra_data_bintang_apogee_low_SNR.csv'
 with open(csv_filename, 'w', newline='') as csvfile:
     writer = csv.writer(csvfile)
     

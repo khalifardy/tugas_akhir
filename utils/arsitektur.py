@@ -67,6 +67,8 @@ class StarNet:
         self.y_train = y_train
         self.X_test = X_test
         self.y_test = y_test
+        self.history = None
+        self.model = None
     
     def decoding(self,x:np.array):
     
@@ -112,7 +114,8 @@ class StarNet:
         X_test = X_test.reshape(X_test.shape[0], X_test.shape[1], 1)
 
         history = model.fit(X_train, y_train, epochs=epoch, batch_size=batch, validation_data=(X_test, y_test))
-    
+        self.history = history
+        self.model = model
         train_error = history.history['loss'][-1]
         val_error = history.history['val_loss'][-1]
     
@@ -127,4 +130,9 @@ class StarNet:
         K.clear_session()
     
         return 1/penyebut
+    
+    def decode(self, encode:list):
+        decode_komodo = self.decoding(encode)
+        return [self.KERNEL_SIZE_DICT.get(decode_komodo[0]), self.KERNEL_SIZE_DICT.get(decode_komodo[1]), self.ACTIVATION_DICT.get(decode_komodo[2]), self.ACTIVATION_DICT.get(decode_komodo[3]), self.KERNEL_INITIALIZER.get(decode_komodo[4]), self.KERNEL_INITIALIZER.get(decode_komodo[5]), decode_komodo[6], self.ACTIVATION_DICT.get(decode_komodo[7]), self.ACTIVATION_DICT.get(decode_komodo[8]), self.ACTIVATION_DICT.get(decode_komodo[9]), self.KERNEL_INITIALIZER.get(decode_komodo[10]), self.KERNEL_INITIALIZER.get(decode_komodo[11]), self.KERNEL_INITIALIZER.get(decode_komodo[12]), self.LEARNING_RATE_DICT.get(decode_komodo[13]), decode_komodo[14], 2**decode_komodo[15]]
+        
     

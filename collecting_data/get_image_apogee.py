@@ -10,9 +10,9 @@ import pandas as pd
 
 base_url = 'https://data.sdss.org/sas/dr17/apogee/spectro/redux/dr17/'
 
-data = pd.read_csv('sdss_spectra_data_bintang_apogee.csv')
+data = pd.read_csv('sdss_spectra_data_bintang_apogee_low_SNR.csv')
 
-save_dir = 'spectra_images_apogee'
+save_dir = 'spectra_images_apogee_low_SNR'
 if not os.path.exists(save_dir):
     os.makedirs(save_dir)
 

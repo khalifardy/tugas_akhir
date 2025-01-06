@@ -309,3 +309,4 @@ class KomodoMlipirAlgorithm:
             "best_fitness": self.best_fitness,
             "history": self.history,
         }
+        
