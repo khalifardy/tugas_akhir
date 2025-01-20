@@ -67,7 +67,7 @@ if __name__ == '__main__':
     }
 
     #inisiasi kma
-    n =10
+    n = 15
     p = 0.5
     d = 0.1
     max_iter = 10

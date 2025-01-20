@@ -24,6 +24,7 @@ class StarNet:
         3:'sigmoid',
         4:'elu',
         5:'selu',
+        6: None
     }
 
     KERNEL_INITIALIZER = {
@@ -53,7 +54,7 @@ class StarNet:
 
     RANGE_DICT = {
         'kernel_size':[1,7],
-        'activation':[1,5],
+        'activation':[1,6],
         'kernel_initializer':[1,13],
         'learning_rate':[1,6],
         'epoch':[50,100],
