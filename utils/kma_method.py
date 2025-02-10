@@ -212,14 +212,21 @@ class KomodoMlipirAlgorithm:
         Returns:
             list: Daftar individu jantan kecil yang telah diperbarui.
         """
-        updated_males = []
-        for male in self.male_small:
-            movement = np.zeros_like(male)
+        for small_male in self.male_small:
+        movement = np.zeros_like(small_male)
+        
             for large_male in self.male_large:
                 r1 = self.rng.normal(0.5, 0.1)
                 r2 = self.rng.uniform()
-                if r2 < self.d:
-                    movement += r1 * (large_male - male)
+            
+                # Pilih dimensi secara acak dengan probabilitas mlipir rate (d)
+                selected_dims = np.where(self.rng.uniform(size=m) < self.d)[0]
+            
+                if len(selected_dims) > 0:  # Jika ada dimensi yang terpilih
+                    # Hitung gerakan hanya untuk dimensi terpilih
+                    diff = large_male - small_male
+                    diff[~np.isin(range(m), selected_dims)] = 0  # Set 0 untuk dimensi yang tidak terpilih
+                    movement += r1 * diff
             updated_male = male + movement
             updated_male = self.clip_individual(updated_male)
             updated_males.append(updated_male)
