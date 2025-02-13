@@ -213,7 +213,7 @@ class KomodoMlipirAlgorithm:
             list: Daftar individu jantan kecil yang telah diperbarui.
         """
         for small_male in self.male_small:
-        movement = np.zeros_like(small_male)
+            movement = np.zeros_like(small_male)
         
             for large_male in self.male_large:
                 r1 = self.rng.normal(0.5, 0.1)
